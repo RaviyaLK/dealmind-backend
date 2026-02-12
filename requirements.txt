@@ -1,0 +1,43 @@
+# FastAPI + Server
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+python-jose[cryptography]==3.4.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+pydantic[email]==2.10.4
+pydantic-settings==2.7.1
+
+# Database
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+alembic==1.14.1
+
+# Document Processing
+PyMuPDF==1.25.3
+python-docx==1.1.2
+openpyxl==3.1.5
+pandas==2.2.3
+
+# AI / LLM
+openai==1.60.0
+langgraph==0.2.62
+langchain==0.3.14
+langchain-core==0.3.30
+langchain-community==0.3.14
+
+# RAG
+sentence-transformers==3.3.1
+chromadb==0.5.23
+langchain-text-splitters==0.3.5
+
+# WebSocket
+websockets==14.1
+
+# Admin UI (like Prisma Studio)
+sqladmin==0.20.1
+
+# Utilities
+python-dotenv==1.0.1
+httpx==0.28.1
+aiofiles==24.1.0

@@ -1,0 +1,17 @@
+.env
+exports/
+.venv
+.__pycache__
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.log
+*.sqlite3
+*.db
+.dealmind.db
+.dealmind.db-shm
+.dealmind.db-wal
+uploads/
+chroma_data/
+.venv/

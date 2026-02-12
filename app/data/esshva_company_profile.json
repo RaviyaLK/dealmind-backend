@@ -1,0 +1,202 @@
+{
+  "company": {
+    "legal_name": "ESSHVA TECHQ (PVT) LTD",
+    "brand_name": "ESSHVA",
+    "tagline": "Build products, define experiences",
+    "website": "https://esshva.com",
+    "founded": 2018,
+    "founder": "Sujeev Rajakulendran",
+    "founder_title": "Founder & Chief Executive Officer",
+    "founding_story": "Started as a trio of computer science engineers crafting a simple app, evolved into a global technology company delivering enterprise software solutions",
+    "headquarters": {
+      "address": "No.546/7 Galle Rd",
+      "city": "Colombo 03",
+      "province": "Western",
+      "country": "Sri Lanka"
+    },
+    "additional_presence": "New South Wales, Australia",
+    "employee_count": 33,
+    "certifications": ["ISO 9001:2015"],
+    "anniversary_theme_2024": "Beyond the Lines of Code"
+  },
+
+  "mission": "To ignite the spark of innovation in every business we get involved in. Driven by the passion to create digital solutions that not only solve problems but also open new possibilities. Committed to building a legacy of excellence, where every project contributes to a brighter, more connected world.",
+
+  "vision": "Unlock new possibilities through innovation and connect lives through cutting-edge technology.",
+
+  "core_values": [
+    "Knowledge-driven — Always looking to learn and push boundaries",
+    "Open communication — Working relationships based on mutual trust",
+    "Transparency — Encourages self-improvement for all",
+    "Sustainability — Integrate sustainable practices into projects",
+    "Diversity & Inclusion — Foster an inclusive workplace that values diverse perspectives",
+    "Innovation — Going out of comfort zone to discover new possibilities"
+  ],
+
+  "services": {
+    "primary": [
+      {
+        "name": "Customized Software Development",
+        "description": "End-to-end bespoke software solutions from design to maintenance. Combining industry expertise with unique client needs to craft tailored solutions for any system or application."
+      },
+      {
+        "name": "Mobile App Development",
+        "description": "Creating intuitive, secure, and scalable mobile applications with end-to-end solutions."
+      },
+      {
+        "name": "Cloud Migration",
+        "description": "Tailored cloud migration strategies that ensure minimal disruption and optimize performance. Assessment of current systems and customized transition plans."
+      },
+      {
+        "name": "Machine Learning / AI",
+        "description": "Machine learning for smarter insights, automation, and better decisions."
+      },
+      {
+        "name": "Software Product Engineering",
+        "description": "Full lifecycle product development from ideation to deployment."
+      },
+      {
+        "name": "Managed Infrastructure Services",
+        "description": "Ongoing infrastructure management, monitoring, and optimization."
+      },
+      {
+        "name": "Digital Branding Services",
+        "description": "Digital transformation services that enhance brand interactions and customer experiences."
+      }
+    ],
+    "delivery_models": [
+      {
+        "name": "Project-Based Model",
+        "description": "Ideal for businesses needing custom solutions to quickly solve unique problems."
+      },
+      {
+        "name": "POD Model",
+        "description": "Dedicated cross-functional teams for continuous improvement and long-term growth. Teams share knowledge, minimizing risks from single points of failure."
+      },
+      {
+        "name": "Startup Services",
+        "description": "Ideation support, rapid prototyping, and scalable solutions for startups."
+      }
+    ],
+    "process": [
+      "Detailed analysis of current processes and systems",
+      "Custom roadmap development addressing specific needs and objectives",
+      "Deploying advanced technologies to enhance operational efficiency",
+      "Seamless integration with existing systems and platforms",
+      "Comprehensive testing (unit, integration, user acceptance)",
+      "Robust security measures and compliance with industry standards",
+      "Performance, scalability, and reliability optimization",
+      "Training and resources for effective software management",
+      "Ongoing support and maintenance",
+      "Continuous monitoring and optimization for performance and ROI"
+    ],
+    "methodology": "Agile — Promotes collaboration and continuous improvement, with cross-functional pods ensuring expert collaboration, faster timelines, and high-quality outcomes."
+  },
+
+  "technologies": {
+    "known_stack": [
+      "PHP",
+      "Laravel",
+      "WordPress",
+      "Apache Kafka",
+      "Apache Hadoop",
+      "MuleSoft",
+      "Docker",
+      "C#",
+      "Python",
+      "Machine Learning"
+    ],
+    "note": "Full technology stack not publicly listed — the above are from public references. Actual capabilities likely broader given their enterprise client base and product portfolio."
+  },
+
+  "products": [
+    {
+      "name": "Leading Workplace",
+      "description": "Workplace certification and assessment platform for employee engagement. Redefines how exceptional companies are recognised by amplifying employee voices through dynamic and real-time workplace assessments. Equips organisations with actionable insights and tools to champion engagement, align people with impact, and differentiate themselves as employers of choice.",
+      "award": "Gold Award — Professional Services category, NBQSA 2025"
+    },
+    {
+      "name": "Chekku",
+      "description": "Comprehensive business management platform that streamlines operations for entrepreneurs and independent contractors. Provides instant access to job opportunities, integrated compliance and governance tools, centralised back-office library for operational efficiency, and skill training resources for continuous professional development.",
+      "award": "Bronze Award — Business ICT Solutions category, NBQSA 2025"
+    },
+    {
+      "name": "Report Connect",
+      "description": "Reporting and connectivity solution."
+    },
+    {
+      "name": "Webestory",
+      "description": "Web-based storytelling / content platform."
+    },
+    {
+      "name": "BizNext",
+      "description": "Business management software."
+    },
+    {
+      "name": "Simple Personal Complaint Management Application",
+      "description": "Complaint tracking and management system."
+    }
+  ],
+
+  "awards_and_recognition": [
+    {
+      "award": "Gold Award — Professional Services (Leading Workplace)",
+      "event": "National Best Quality ICT Awards (NBQSA) 2025",
+      "country": "Sri Lanka"
+    },
+    {
+      "award": "Bronze Award — Business ICT Solutions (Chekku)",
+      "event": "National Best Quality ICT Awards (NBQSA) 2025",
+      "country": "Sri Lanka"
+    }
+  ],
+
+  "industries_served": [
+    "Finance / Financial Technology",
+    "Healthcare",
+    "Education",
+    "E-Commerce / Retail",
+    "Enterprise Software",
+    "Professional Services",
+    "Workforce Management"
+  ],
+
+  "global_reach": {
+    "client_regions": [
+      "United States (USA)",
+      "Singapore",
+      "Australia",
+      "United Kingdom (UK)",
+      "Sweden",
+      "Norway",
+      "Sri Lanka"
+    ],
+    "notable_client_types": "NASDAQ, SGX, and ASX listed companies — globally recognized stock exchanges",
+    "note": "Portfolio includes reputable accounts from globally recognized stock exchange-listed companies."
+  },
+
+  "capabilities_summary": {
+    "software_development": "Custom enterprise software, full-stack web and mobile applications",
+    "cloud_and_infrastructure": "Cloud migration, managed infrastructure, DevOps",
+    "ai_and_data": "Machine learning, AI solutions, data processing (Kafka, Hadoop)",
+    "integration": "Enterprise system integration (MuleSoft), API development",
+    "product_engineering": "End-to-end product development, SaaS platforms",
+    "quality_assurance": "Comprehensive testing (unit, integration, UAT), ISO 9001:2015 certified processes",
+    "digital_transformation": "Digital branding, customer experience transformation",
+    "startup_support": "Ideation, rapid prototyping, scalable architecture"
+  },
+
+  "data_sources": [
+    "https://esshva.com/",
+    "https://esshva.com/about-us/",
+    "https://esshva.com/services/",
+    "https://www.ft.lk/business/Esshva-recognised-at-NBQSA-2025/34-784011",
+    "https://www.ft.lk/it-telecom-tech/Esshva-completes-3-years-of-connecting-homegrown-tech-to-the-world/50-711822",
+    "https://archives1.dailynews.lk/2021/01/18/finance/239063/esshva-celebrates-third-anniversary",
+    "https://contactout.com/company/ESSHVA-7471",
+    "https://www.zoominfo.com/c/esshva-pty-ltd/482649511"
+  ],
+
+  "extracted_at": "2026-02-12",
+  "note": "This data was compiled from publicly available sources. Some details (especially full technology stack and specific client names) are not publicly disclosed by ESSHVA."
+}
