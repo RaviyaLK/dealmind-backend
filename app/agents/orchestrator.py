@@ -603,10 +603,36 @@ async def run_monitoring_flow(task_id: str, deal_id: str):
                 deal.status = "at_risk"
             db.commit()
 
+            # ── WhatsApp alert for critical/high severity risks ──
+            risk_alerts = [
+                a for a in result.get("detected_alerts", [])
+                if a.get("severity") in ("critical", "high")
+            ]
+            if risk_alerts:
+                try:
+                    from app.mcp.tools.whatsapp_tools import send_deal_risk_alert
+                    for alert_data in risk_alerts:
+                        wa_result = send_deal_risk_alert(
+                            deal_title=deal.title,
+                            client_name=deal.client_name or "Unknown",
+                            alert_type=alert_data.get("alert_type", "sentiment_drop"),
+                            severity=alert_data.get("severity", "high"),
+                            health_score=health_score,
+                            sentiment_score=result.get("overall_sentiment", 0.0),
+                            description=alert_data.get("description", ""),
+                        )
+                        if wa_result.get("status") == "ok":
+                            logger.info(f"run_monitoring_flow: WhatsApp alert sent — SID: {wa_result.get('message_sid')}")
+                        else:
+                            logger.warning(f"run_monitoring_flow: WhatsApp alert failed — {wa_result.get('error')}")
+                except Exception as wa_err:
+                    logger.warning(f"run_monitoring_flow: WhatsApp notification skipped — {wa_err}")
+
             await send_update(task_id, "complete", 4, 4, "completed", "Monitoring complete", {
                 "health_score": health_score,
                 "sentiment": result.get("overall_sentiment"),
                 "alerts_generated": alerts_count,
+                "whatsapp_notified": len(risk_alerts) > 0,
             })
     except Exception as e:
         logger.error(f"run_monitoring_flow: exception occurred - {type(e).__name__}: {e}")

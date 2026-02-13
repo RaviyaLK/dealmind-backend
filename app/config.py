@@ -28,6 +28,12 @@ class Settings(BaseSettings):
     GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/integrations/google/callback"
     GOOGLE_FRONTEND_REDIRECT: str = "http://localhost:5173/settings"
 
+    # Twilio WhatsApp (for deal risk alerts)
+    TWILIO_ACCOUNT_SID: str = ""
+    TWILIO_AUTH_TOKEN: str = ""
+    TWILIO_WHATSAPP_FROM: str = ""       # e.g. "+14155238886" (Twilio sandbox number)
+    ADMIN_WHATSAPP_NUMBER: str = ""       # e.g. "+94771234567" (your WhatsApp number)
+
     # Server
     HOST: str = "0.0.0.0"
     PORT: int = 8000

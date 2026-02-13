@@ -37,6 +37,12 @@ websockets==14.1
 # Admin UI (like Prisma Studio)
 sqladmin==0.20.1
 
+# MCP (Model Context Protocol)
+mcp>=1.0.0
+
+# WhatsApp Alerts (Twilio)
+twilio>=9.0.0
+
 # Utilities
 python-dotenv==1.0.1
 httpx==0.28.1

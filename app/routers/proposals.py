@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from uuid import uuid4
 from datetime import datetime
 import aiofiles
+import json
 import os
 import re
 import tempfile
@@ -213,6 +214,226 @@ def submit_proposal_review(
     db.refresh(proposal)
 
     return ProposalResponse.model_validate(proposal)
+
+
+# ═══════════════════════════════════════════════════
+# PROPOSAL CHAT — Refine proposal via MCP tools
+# ═══════════════════════════════════════════════════
+from pydantic import BaseModel
+from typing import List, Optional as Opt
+
+
+class ChatMessage(BaseModel):
+    role: str  # "user" or "assistant"
+    content: str
+
+
+class ProposalChatRequest(BaseModel):
+    message: str
+    history: List[ChatMessage] = []
+
+
+def _clean_json_block(text: str) -> str:
+    """Strip markdown code-block wrappers from a JSON string."""
+    cleaned = text.strip()
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r"^```(?:json)?\s*\n?", "", cleaned)
+        cleaned = re.sub(r"\n?```\s*$", "", cleaned)
+        cleaned = cleaned.strip()
+    return cleaned
+
+
+def _extract_tool_calls(response: str) -> tuple:
+    """Try to extract tool_calls from LLM response.
+
+    Returns (tool_calls_list, remaining_text).
+    tool_calls_list is [] if no tool calls found.
+    """
+    cleaned = _clean_json_block(response)
+
+    # Try to parse as JSON with tool_calls key
+    try:
+        data = json.loads(cleaned)
+        if isinstance(data, dict) and "tool_calls" in data:
+            calls = data["tool_calls"]
+            reply_text = data.get("reply", "")
+            return (calls if isinstance(calls, list) else [], reply_text)
+    except (json.JSONDecodeError, ValueError):
+        pass
+
+    # Try to find embedded JSON object in the response
+    brace_start = response.find('{"tool_calls"')
+    if brace_start >= 0:
+        # Find matching closing brace
+        depth = 0
+        for i in range(brace_start, len(response)):
+            if response[i] == "{":
+                depth += 1
+            elif response[i] == "}":
+                depth -= 1
+                if depth == 0:
+                    try:
+                        data = json.loads(response[brace_start : i + 1])
+                        calls = data.get("tool_calls", [])
+                        reply_text = data.get("reply", response[:brace_start].strip())
+                        return (calls if isinstance(calls, list) else [], reply_text)
+                    except json.JSONDecodeError:
+                        break
+
+    return ([], "")
+
+
+@router.post("/{proposal_id}/chat")
+async def chat_with_proposal(
+    proposal_id: str,
+    body: ProposalChatRequest,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """Chat with Quinn to refine a proposal using MCP tools.
+
+    Quinn can use registered MCP tools (update_section, add_section,
+    remove_section, list_sections, send_email, etc.) to make targeted
+    edits to the proposal and interact with Gmail.
+    """
+    from app.services.llm import call_llm
+    from app.mcp.registry import full_registry, ensure_setup
+    ensure_setup()
+
+    proposal = db.query(Proposal).filter(Proposal.id == proposal_id).first()
+    if not proposal:
+        raise HTTPException(status_code=404, detail="Proposal not found")
+
+    # Build conversation history
+    history_text = ""
+    for msg in body.history:
+        role_label = "USER" if msg.role == "user" else "QUINN"
+        history_text += f"{role_label}: {msg.content}\n"
+
+    # Get MCP tool descriptions for the prompt
+    tools_prompt = full_registry.get_tools_for_prompt()
+
+    prompt = f"""You are Quinn, the AI assistant for DealMind. You help users refine their business proposals through conversation.
+
+CURRENT PROPOSAL ID: {proposal_id}
+
+CURRENT PROPOSAL CONTENT:
+---
+{proposal.content}
+---
+
+CONVERSATION HISTORY:
+{history_text}
+
+USER REQUEST: {body.message}
+
+AVAILABLE MCP TOOLS:
+{tools_prompt}
+
+INSTRUCTIONS:
+You have two ways to respond:
+
+1. **Use tools** — If the user's request involves editing the proposal or interacting with email, respond with JSON:
+```json
+{{
+  "tool_calls": [
+    {{"name": "tool_name", "arguments": {{...}}}}
+  ],
+  "reply": "Brief explanation of what you're doing"
+}}
+```
+IMPORTANT: For tool arguments, the proposal_id is "{proposal_id}". Do NOT include proposal_id in the arguments — it is automatically injected.
+
+2. **Direct response** — If the user is asking a question or the request doesn't need tools, respond with:
+```json
+{{
+  "reply": "Your conversational response here"
+}}
+```
+
+RULES:
+- Always respond with valid JSON (no extra text outside the JSON)
+- For update_section: new_content should be the section BODY only (no heading line)
+- For add_section: provide section_name, content, and optionally after_section
+- You can call multiple tools at once
+- Do not wrap JSON in code blocks"""
+
+    tools_used = []
+
+    try:
+        raw = call_llm(prompt, max_tokens=8192)
+        tool_calls, reply_text = _extract_tool_calls(raw)
+
+        if tool_calls:
+            # ── Execute MCP tool calls ──
+            tool_results = []
+            for tc in tool_calls:
+                name = tc.get("name", "")
+                args = tc.get("arguments", {})
+
+                # Auto-inject proposal_id if tool needs it
+                if "proposal_id" not in args:
+                    args["proposal_id"] = proposal_id
+
+                result = await full_registry.execute(
+                    name,
+                    args,
+                    context={
+                        "proposal_id": proposal_id,
+                        "user_id": current_user.id,
+                        "db": db,
+                    },
+                )
+                tool_results.append({"tool": name, **result})
+                tools_used.append(name)
+
+            # If we don't have a reply from the initial response, ask LLM to summarize
+            if not reply_text:
+                summary_prompt = f"""You just executed these MCP tools on a proposal:
+
+Tool Results:
+{json.dumps(tool_results, indent=2, default=str)}
+
+User's original request was: "{body.message}"
+
+Write a brief, friendly reply (1-2 sentences) explaining what you did. Respond with plain text only, no JSON."""
+
+                reply_text = call_llm(summary_prompt, max_tokens=512)
+
+            # Check if any tool had errors
+            errors = [r for r in tool_results if r.get("status") == "error"]
+            if errors:
+                error_msgs = [r.get("error", "Unknown error") for r in errors]
+                reply_text = f"{reply_text}\n\n⚠️ Some operations had issues: {'; '.join(error_msgs)}"
+
+        else:
+            # No tool calls — use the LLM response directly
+            # Try to extract reply from JSON format
+            cleaned = _clean_json_block(raw)
+            try:
+                data = json.loads(cleaned)
+                if isinstance(data, dict):
+                    reply_text = data.get("reply", raw.strip())
+                    # Check for updated_content (legacy fallback)
+                    if "updated_content" in data:
+                        proposal.content = data["updated_content"]
+                        db.commit()
+                else:
+                    reply_text = raw.strip()
+            except json.JSONDecodeError:
+                reply_text = raw.strip()
+
+        # Refresh proposal from DB (tools may have modified it)
+        db.refresh(proposal)
+
+        return {
+            "reply": reply_text or "Done!",
+            "updated_content": proposal.content,
+            "tools_used": tools_used,
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Chat failed: {str(e)}")
 
 
 @router.get("/{proposal_id}/export/docx")
